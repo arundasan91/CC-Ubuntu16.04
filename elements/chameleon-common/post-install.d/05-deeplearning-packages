@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+######
+# INSTALL POPULAR DEEP LEARNING PACKAGES USING PIP / FROM SOURCE.
+# Change this script for all external libraries and frameworks rather than messing up the GPU driver and CUDA install scripts.
+######
+
+# Install python pip
+sudo apt-get install python-pip
+
+# OpenCV and some Caffe dependencies
+sudo apt-get install -y build-essential cmake git
+sudo apt-get install -y pkg-config unzip ffmpeg qtbase5-dev python-dev python3-dev python-numpy python3-numpy
+sudo apt-get install -y libgtk-3-dev libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libtiff5-dev libjasper-dev
+sudo apt-get install -y libavcodec-dev libavformat-dev libswscale-dev libxine2-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
+sudo apt-get install -y libv4l-dev libtbb-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev
+sudo apt-get install -y libvorbis-dev libxvidcore-dev v4l-utils
+
+# If CuDNN exist, install it
+if [ -f "cudnn-8.0-linux-x64-v6.0.tgz" ] ; then
+  tar -xvf cudnn-8.0-linux-x64-v6.0.tgz -C /usr/local/
+fi
+
+# Install some general libraries
+pip install matplotlib pandas librosa scikit-learn scikit-image
+
+# OpenCV Installation: Consider not installing libopencv-dev and opencv-python if building OpenCV from source
+sudo apt-get install -y libopencv-dev
+pip install opencv-python
+
+# Future: Add script to build OpenCV from source here.
+
+# Install Deep Learning frameworks
+pip install keras theano tflearn
+
+# If you like to pip install tensorflow, do this:
+pip install tensorflow-gpu
+
+# FUTURE: Add script to build tensorflow from source here.
