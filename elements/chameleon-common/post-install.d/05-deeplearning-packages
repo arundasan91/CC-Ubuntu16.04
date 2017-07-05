@@ -14,9 +14,9 @@ set -o pipefail
 # Install python pip
 sudo apt-get install python-pip
 
-# OpenCV and some Caffe dependencies
-sudo apt-get install -y build-essential cmake git python-setuptools python3-setuptools
-sudo apt-get install -y pkg-config unzip ffmpeg qtbase5-dev python-dev python3-dev python-numpy python3-numpy
+# OpenCV and some Caffe + Other dependencies
+sudo apt-get install -y build-essential cmake git
+sudo apt-get install -y pkg-config unzip ffmpeg qtbase5-dev python-dev python3-dev python-numpy python3-numpy python-setuptools python3-setuptools python-wheel python3-wheel
 sudo apt-get install -y libgtk-3-dev libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libtiff5-dev libjasper-dev
 sudo apt-get install -y libavcodec-dev libavformat-dev libswscale-dev libxine2-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
 sudo apt-get install -y libv4l-dev libtbb-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev
@@ -27,8 +27,17 @@ if [ -f "cudnn-8.0-linux-x64-v6.0.tgz" ] ; then
   sudo tar -xvf cudnn-8.0-linux-x64-v6.0.tgz -C /usr/local/
 fi
 
+#Update .bashrc
+cat <<EOF >>/home/cc/.bashrc
+export CUDA_ROOT=/usr/local/cuda
+export CUDA_HOME=$CUDA_ROOT
+export PATH=$PATH:$CUDA_ROOT/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CUDA_ROOT/lib64:$CUDA_ROOT/extras/CUPTI/lib64
+export CC="/usr/bin/gcc"
+export CXX="/usr/bin/g++"
+EOF
+
 # Install some general libraries
-pip install wheel
 pip install matplotlib pandas librosa scikit-learn scikit-image
 
 # OpenCV Installation: Consider not installing libopencv-dev and opencv-python if building OpenCV from source
@@ -36,6 +45,19 @@ sudo apt-get install -y libopencv-dev
 pip install opencv-python
 
 # Future: Add script to build OpenCV from source here.
+
+# Install Java8
+sudo add-apt-repository -y ppa:webupd8team/java
+sudo apt-get update 
+echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+sudo apt-get install -y oracle-java8-installer
+
+# Install Bazel
+echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+curl https://storage.googleapis.com/bazel-apt/doc/apt-key.pub.gpg | sudo apt-key add -
+sudo apt-get update && sudo apt-get install bazel
+sudo apt-get upgrade bazel
 
 # Install Deep Learning frameworks
 pip install keras theano tflearn
