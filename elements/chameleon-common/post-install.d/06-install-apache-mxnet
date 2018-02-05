@@ -9,7 +9,7 @@ set -o pipefail
 # Adapted from: https://github.com/apache/incubator-mxnet/blob/0.11.0.rc3/setup-utils/install-mxnet-ubuntu-python.sh
 
 # Clone MXNET repository
-git clone https://github.com/apache/incubator-mxnet.git $HOME/mxnet/
+git clone https://github.com/apache/incubator-mxnet.git $HOME/mxnet/ --recursive
 
 MXNET_HOME="$HOME/mxnet/"
 echo "MXNet root folder: $MXNET_HOME"
